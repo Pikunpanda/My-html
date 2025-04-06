@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NANA MILK TRADERS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+    }
+    .invoice-box {
+      width: 210mm;
+      min-height: 297mm;
+      margin: auto;
+      padding: 10px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    h3, h5 {
+      text-align: center;
+      margin: 0;
+      font-size: 14px;
+    }
+    h5 {
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 3px;
+      vertical-align: top;
+    }
+    th {
+      background: #f1f1f1;
+    }
+    input, select, textarea {
+      width: 100%;
+      font-size: 11px;
+      padding: 2px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+    }
+    textarea {
+      resize: none;
+    }
+    .add-row-btn, .print-btn button {
+      font-size: 11px;
+      padding: 4px 8px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border: none;
+      border-radius: 3px;
+    }
+    .add-row-btn {
+      background: #007bff;
+      color: #fff;
+    }
+    .print-btn button {
+      background: #28a745;
+      color: white;
+    }
+    .footer table {
+      border: none;
+    }
+    .footer td {
+      border: none;
+      padding: 2px;
+      font-size: 11px;
+    }
+    .signature {
+      margin-top: 20px;
+      text-align: right;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    @media print {
+      .add-row-btn, .print-btn, button {
+        display: none !important;
+      }
+      input, select, textarea {
+        border: none !important;
+        background: transparent !important;
+        appearance: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="invoice-box" id="invoice">
+  <h3 contenteditable="true">NANA MILK TRADERS</h3>
+  <h5 contenteditable="true">PALASPANGA, KEONJHAR, ODISHA, 758031</h5>
+
+  <table>
+    <tr>
+      <td><strong>Invoice No:</strong> <input type="text" id="invoiceNumber" value="INV00123"></td>
+      <td><strong>Date:</strong> <input type="date"></td>
+    </tr>
+    <tr>
+      <td><strong>GST No:</strong> <input type="text" value="21FCZPP2302E1ZP"></td>
+      <td><strong>Mobile:</strong> <input type="text" value="8249649781"></td>
+    </tr>
+    <tr>
+      <td colspan="2"><strong>Bill To:</strong> <textarea rows="2">THE PRINCIPAL, EMRS GIDHIBAS, GIDHIBAS, JHUMPURA, KEONJHAR, 758031</textarea></td>
+    </tr>
+    <tr>
+      <td colspan="2"><strong>Ship To:</strong> <textarea rows="2">THE PRINCIPAL, EMRS GIDHIBAS, GIDHIBAS, JHUMPURA, KEONJHAR, 758031</textarea></td>
+    </tr>
+  </table>
+
+  <table id="itemsTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Item</th>
+        <th>Qty</th>
+        <th>Rate</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <tr>
+        <td><input type="date" name="date"></td>
+        <td>
+          <select name="item" onchange="setRate(this)">
+            <option value="">Select</option>
+            <option value="GOLD MILK">GOLD MILK</option>
+            <option value="BREAD">BREAD</option>
+            <option value="DAHI">DAHI</option>
+          </select>
+        </td>
+        <td><input type="number" name="qty" oninput="calculateRow(this)"></td>
+        <td><input type="number" name="rate" oninput="calculateRow(this)"></td>
+        <td><input type="number" name="total" readonly></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="add-row-btn" onclick="addRow()">Add Row</button>
+
+  <table>
+    <tr>
+      <td><strong>Grand Total</strong></td>
+      <td><input id="grandTotal" type="number" readonly></td>
+    </tr>
+  </table>
+
+  <div class="print-btn">
+    <button onclick="window.print()">Print</button>
+    <button onclick="downloadPDF()">Download PDF</button>
+  </div>
+
+  <div class="footer">
+    <table>
+      <tr><td><strong>Bank:</strong> STATE BANK OF INDIA</td></tr>
+      <tr><td><strong>Account:</strong> 41947207867</td></tr>
+      <tr><td><strong>IFSC:</strong> SBIN0013614</td></tr>
+      <tr><td><strong>Name:</strong> Upendra Panda</td></tr>
+      <tr><td><strong>Branch:</strong> Jhumpura</td></tr>
+    </table>
+  </div>
+
+  <div class="signature">Authorised Signature</div>
+</div>
+
+<script>
+  function addRow() {
+    const tbody = document.getElementById("tableBody");
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><input type="date" name="date"></td>
+      <td>
+        <select name="item" onchange="setRate(this)">
+          <option value="">Select</option>
+          <option value="GOLD MILK">GOLD MILK</option>
+          <option value="BREAD">BREAD</option>
+          <option value="DAHI">DAHI</option>
+        </select>
+      </td>
+      <td><input type="number" name="qty" oninput="calculateRow(this)"></td>
+      <td><input type="number" name="rate" oninput="calculateRow(this)"></td>
+      <td><input type="number" name="total" readonly></td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  function setRate(select) {
+    const rateInput = select.parentElement.nextElementSibling.nextElementSibling.firstElementChild;
+    const value = select.value;
+    if (value === "GOLD MILK") rateInput.value = 54;
+    else if (value === "BREAD") rateInput.value = 8;
+    else if (value === "DAHI") rateInput.value = 50;
+    calculateRow(rateInput);
+  }
+
+  function calculateRow(input) {
+    const row = input.closest("tr");
+    const qty = row.querySelector('input[name="qty"]').valueAsNumber || 0;
+    const rate = row.querySelector('input[name="rate"]').valueAsNumber || 0;
+    const total = qty * rate;
+    row.querySelector('input[name="total"]').value = total.toFixed(2);
+    calculateTotal();
+  }
+
+  function calculateTotal() {
+    let grandTotal = 0;
+    document.querySelectorAll('input[name="total"]').forEach(input => {
+      grandTotal += parseFloat(input.value) || 0;
+    });
+    document.getElementById("grandTotal").value = grandTotal.toFixed(2);
+  }
+
+  function downloadPDF() {
+    const element = document.getElementById('invoice');
+    const invoiceNumber = document.getElementById("invoiceNumber").value || 'Invoice';
+    const opt = {
+      margin: 0.3,
+      filename: `Invoice-${invoiceNumber}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  }
+</script>
+
+</body>
+</html>
